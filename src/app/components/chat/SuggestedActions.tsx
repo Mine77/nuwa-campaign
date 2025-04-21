@@ -1,6 +1,4 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { GridCards } from '../cards/GridCards';
 
 interface SuggestedActionsProps {
     onSelectSuggestion: (suggestion: string) => void;
