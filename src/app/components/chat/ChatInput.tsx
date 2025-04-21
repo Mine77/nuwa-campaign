@@ -5,10 +5,10 @@ interface ChatInputProps {
     onChange: (value: string) => void;
     onSubmit: () => void;
     onStop?: () => void;
-    isLoading?: boolean;
+    isStreaming?: boolean;
 }
 
-export function ChatInput({ value, onChange, onSubmit, onStop, isLoading }: ChatInputProps) {
+export function ChatInput({ value, onChange, onSubmit, onStop, isStreaming }: ChatInputProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [isFocused, setIsFocused] = useState(false);
 
@@ -49,7 +49,7 @@ export function ChatInput({ value, onChange, onSubmit, onStop, isLoading }: Chat
             />
 
             <div className="absolute bottom-2 right-2 flex items-center gap-2">
-                {isLoading && onStop && (
+                {isStreaming && onStop && (
                     <button
                         onClick={onStop}
                         className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
@@ -73,7 +73,7 @@ export function ChatInput({ value, onChange, onSubmit, onStop, isLoading }: Chat
 
                 <button
                     onClick={onSubmit}
-                    disabled={isLoading || !value.trim()}
+                    disabled={isStreaming || !value.trim()}
                     className="p-2 rounded-lg bg-primary text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
                     aria-label="Send message"
                 >

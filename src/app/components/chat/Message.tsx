@@ -3,7 +3,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import { LoadingDots } from './LoadingDots';
 import 'katex/dist/katex.min.css';
 import React from 'react';
 import Image from 'next/image';
@@ -11,7 +10,6 @@ import Image from 'next/image';
 interface MessageProps {
     content: string;
     role: 'user' | 'assistant';
-    isLoading?: boolean;
     isStreaming?: boolean;
 }
 
@@ -101,7 +99,6 @@ const markdownComponents = {
 export function Message({
     content,
     role,
-    isLoading,
     isStreaming = false,
 }: MessageProps) {
     return (
@@ -150,12 +147,6 @@ export function Message({
                                 </div>
                             </div>
                         </div>
-
-                        {isLoading && !isStreaming && role === 'assistant' && (
-                            <div className="flex items-center justify-center">
-                                <LoadingDots />
-                            </div>
-                        )}
                     </div>
                 </div>
             </motion.div>
