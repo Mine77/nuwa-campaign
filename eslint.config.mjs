@@ -11,9 +11,9 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    sources: {
-      files: ["**/*.{js,jsx,ts,tsx,css}"],
-      negated: false
+    files: ["**/*.{js,jsx,ts,tsx,css}"],
+    rules: {
+      // 全局规则配置
     }
   },
   {
