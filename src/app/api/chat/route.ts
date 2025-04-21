@@ -1,23 +1,27 @@
 import { anthropic } from '@ai-sdk/anthropic';
 import { streamText } from 'ai';
 import { tools } from './tools';
+import { getIrisSystemPrompt } from '../systemPrompts/iris-agent';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
     try {
-        const { messages } = await req.json();
+        const { messages, userInfo } = await req.json();
 
         if (!process.env.ANTHROPIC_API_KEY) {
             throw new Error('ANTHROPIC_API_KEY is not set');
         }
 
+        // 使用客户端传递的用户信息生成系统提示
+        const systemPrompt = getIrisSystemPrompt(userInfo || {});
+
         const result = await streamText({
             model: anthropic('claude-3-haiku-20240307'),
             messages,
             tools,
-            system: 'You are a helpful assistant that can answer questions and help with tasks. when user ask you about weather, you should reply with the weather in the location. After the calling the weather tool, you should reply with the weather in the location.',
+            system: systemPrompt,
             maxSteps: 5,
             toolChoice: 'auto'
         });

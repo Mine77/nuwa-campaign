@@ -4,13 +4,24 @@ import { useChat } from '@ai-sdk/react';
 import { useScrollToBottom } from './useScrollToBottom';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 import { Missions } from './Missions';
 import { MessageContainer } from './MessageContainer';
 import { InputContainer } from './InputContainer';
 import DotExpandButton from './DotExpandButton';
 
 export function Chat() {
-    const { messages, input, handleInputChange, handleSubmit, status, append, setMessages } = useChat();
+    const { data: session } = useSession();
+    const userInfo = {
+        name: session?.user?.name || "visitor",
+        twitterHandle: session?.user?.twitterHandle || "visitor"
+    };
+
+    const { messages, input, handleInputChange, handleSubmit, status, append, setMessages } = useChat({
+        body: {
+            userInfo: userInfo
+        }
+    });
     const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>();
     const [showGridCards, setShowGridCards] = useState(false);
 
