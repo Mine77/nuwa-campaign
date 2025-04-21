@@ -37,7 +37,7 @@ export const FloatingNav = () => {
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.5 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50"
+            className="fixed top-4 z-50 w-full flex justify-center"
         >
             <div className="flex items-center justify-center space-x-4 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-slate-200">
                 {navItems.map((item) => (

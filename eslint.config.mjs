@@ -10,6 +10,20 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    sources: {
+      files: ["**/*.{js,jsx,ts,tsx,css}"],
+      negated: false
+    }
+  },
+  {
+    files: ["**/*.css"],
+    rules: {
+      // 禁用 CSS 文件的特定规则
+      "no-unused-vars": "off",
+      "no-undef": "off"
+    }
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 
