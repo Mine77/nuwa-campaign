@@ -4,19 +4,21 @@ import { GridCards } from '../cards/GridCards';
 import DotExpandButton from './DotExpandButton';
 import { SuggestedActions } from './SuggestedActions';
 
-interface ActivitiesProps {
+interface MissionsProps {
     showGridCards: boolean;
     onCloseGridCards: () => void;
     onSelectSuggestion: (suggestion: string) => void;
     onShowGridCards: () => void;
 }
 
-export function Activities({
+export function Missions({
     showGridCards,
     onCloseGridCards,
     onSelectSuggestion,
     onShowGridCards
-}: ActivitiesProps) {
+}: MissionsProps) {
+    console.log("Missions component rendered, onSelectSuggestion:", !!onSelectSuggestion);
+
     if (showGridCards) {
         return (
             <motion.div
@@ -28,7 +30,7 @@ export function Activities({
             >
                 <motion.button
                     onClick={onCloseGridCards}
-                    className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 hover:bg-white shadow-md transition-colors"
+                    className="sticky top-4 float-right z-10 p-2 rounded-full bg-white/80 hover:bg-white shadow-md transition-colors"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
@@ -44,7 +46,10 @@ export function Activities({
                     exit={{ opacity: 0, y: 20 }}
                     transition={{ delay: 0.1, duration: 0.5 }}
                 >
-                    <GridCards />
+                    <GridCards
+                        onSelectSuggestion={onSelectSuggestion}
+                        onCloseGridCards={onCloseGridCards}
+                    />
                 </motion.div>
             </motion.div>
         );
@@ -64,7 +69,7 @@ export function Activities({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.2 }}
                 >
-                    Suggested Activities
+                    Suggested Missions
                 </motion.h2>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -74,7 +79,7 @@ export function Activities({
                     whileTap={{ scale: 0.95 }}
                 >
                     <DotExpandButton
-                        text="More Activities"
+                        text="More Missions"
                         onClick={onShowGridCards}
                     />
                 </motion.div>
