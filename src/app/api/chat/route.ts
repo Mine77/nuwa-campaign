@@ -1,27 +1,11 @@
 import { anthropic } from '@ai-sdk/anthropic';
-import { streamText, tool } from 'ai';
-import { z } from 'zod';
+import { streamText } from 'ai';
+import { tools } from './tools';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-    const tools = {
-        weather: tool({
-            description: 'Get the weather in a location (fahrenheit)',
-            parameters: z.object({
-                location: z.string().describe('The location to get the weather for'),
-            }),
-            execute: async ({ location }) => {
-                const temperature = Math.round(Math.random() * (90 - 32) + 32);
-                return {
-                    location,
-                    temperature,
-                };
-            },
-        }),
-    }
-
     try {
         const { messages } = await req.json();
 
@@ -33,7 +17,9 @@ export async function POST(req: Request) {
             model: anthropic('claude-3-haiku-20240307'),
             messages,
             tools,
-            system: 'You are a helpful assistant that can answer questions and help with tasks.',
+            system: 'You are a helpful assistant that can answer questions and help with tasks. when user ask you about weather, you should reply with the weather in the location. After the calling the weather tool, you should reply with the weather in the location.',
+            maxSteps: 5,
+            toolChoice: 'auto'
         });
 
         return result.toDataStreamResponse();

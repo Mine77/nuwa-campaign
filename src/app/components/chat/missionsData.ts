@@ -47,7 +47,7 @@ export const MISSIONS: Mission[] = [
         id: "twitter-score",
         title: "Twitter Score",
         description: "Help me to evaluate my twitter score",
-        suggestionText: "I need help to evaluate my twitter score",
+        suggestionText: "今天杭州天气怎么样",
         suggested: true
     },
     {
