@@ -10,7 +10,7 @@ export const Greeting = () => {
                 transition={{ delay: 0.5 }}
                 className="text-2xl font-semibold"
             >
-                Hello!
+                Hello! How are you!
             </motion.div>
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -19,7 +19,7 @@ export const Greeting = () => {
                 transition={{ delay: 0.6 }}
                 className="text-lg text-gray-500 dark:text-gray-400 mt-2"
             >
-                How can I help with your marketing campaigns today?
+                Which campaign do you wanna participate in?
             </motion.div>
         </div>
     );

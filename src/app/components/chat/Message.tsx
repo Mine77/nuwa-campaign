@@ -6,13 +6,53 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import React from 'react';
 import Image from 'next/image';
+import { UIMessage } from 'ai';
 
-interface MessageProps {
-    content: string;
-    role: 'user' | 'assistant';
-    isStreaming?: boolean;
+// 类型定义
+type MessageRole = 'user' | 'assistant' | 'system';
+type MessagePartType = 'text' | 'tool-invocation';
+
+interface MessagePart {
+    type: MessagePartType;
+    text?: string;
+    toolInvocation?: any;
 }
 
+interface MessageProps {
+    message: UIMessage;
+}
+
+// 样式工具函数
+const getMessageContainerClass = (role: MessageRole): string => {
+    switch (role) {
+        case 'user':
+            return 'justify-end';
+        default:
+            return 'justify-start';
+    }
+};
+
+const getMessageContentClass = (role: MessageRole): string => {
+    switch (role) {
+        case 'user':
+            return 'items-end max-w-2xl md:max-w-3xl';
+        default:
+            return 'w-full';
+    }
+};
+
+const getMessageBubbleClass = (role: MessageRole, partType?: MessagePartType): string => {
+    switch (role) {
+        case 'user':
+            return 'bg-indigo-600 text-white [&_*]:text-white px-3 py-2 rounded-xl';
+        default:
+            return partType === 'tool-invocation'
+                ? 'bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-xl font-mono text-sm'
+                : 'bg-muted px-3 py-2 rounded-xl';
+    }
+};
+
+// Markdown 组件配置
 const markdownComponents = {
     code: ({ node, inline, className, children, ...props }: any) => {
         const match = /language-(\w+)/.exec(className || '');
@@ -96,11 +136,60 @@ const markdownComponents = {
     },
 };
 
-export function Message({
-    content,
-    role,
-    isStreaming = false,
-}: MessageProps) {
+// 消息内容渲染组件
+const MessageContent: React.FC<{ part: MessagePart }> = ({ part }) => {
+    switch (part.type) {
+        case 'tool-invocation':
+            return (
+                <pre className="m-0 whitespace-pre">
+                    {JSON.stringify(part.toolInvocation, null, 2)}
+                </pre>
+            );
+        case 'text':
+            return (
+                <div className="prose dark:prose-invert max-w-none">
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                        components={markdownComponents}
+                    >
+                        {part.text}
+                    </ReactMarkdown>
+                </div>
+            );
+        default:
+            return null;
+    }
+};
+
+// 消息气泡组件
+const MessageBubble: React.FC<{ part: MessagePart; content: string }> = ({ part, content }) => {
+    return (
+        <div className="flex flex-col gap-4">
+            <MessageContent part={part} />
+        </div>
+    );
+};
+
+// 头像组件
+const Avatar: React.FC<{ role: MessageRole }> = ({ role }) => {
+    if (role !== 'assistant') return null;
+
+    return (
+        <div className="size-10 flex items-center rounded-full justify-center shrink-0">
+            <img
+                src="/nuwa.svg"
+                alt="Nuwa Logo"
+                className="size-6"
+            />
+        </div>
+    );
+};
+
+// 主消息组件
+export function Message({ message }: MessageProps) {
+    const { role, parts } = message;
+
     return (
         <AnimatePresence>
             <motion.div
@@ -110,42 +199,19 @@ export function Message({
                 animate={{ y: 0, opacity: 1 }}
                 data-role={role}
             >
-                <div
-                    className={`flex gap-4 w-full ${role === 'user' ? 'justify-end' : 'justify-start'
-                        }`}
-                >
-                    {role === 'assistant' && (
-                        <div className="size-10 flex items-center rounded-full justify-center shrink-0">
-                            <img
-                                src="/nuwa.svg"
-                                alt="Nuwa Logo"
-                                className="size-6"
-                            />
-                        </div>
-                    )}
+                <div className={`flex gap-4 w-full ${getMessageContainerClass(role as MessageRole)}`}>
+                    <Avatar role={role as MessageRole} />
 
-                    <div className={`flex flex-col gap-4 ${role === 'user'
-                        ? 'items-end max-w-2xl md:max-w-3xl'
-                        : 'w-full'
-                        }`}>
-                        <div className="flex flex-row gap-2 items-start">
-                            <div
-                                data-testid="message-content"
-                                className={`flex flex-col gap-4 ${role === 'user'
-                                    ? 'bg-indigo-600 text-white [&_*]:text-white px-3 py-2 rounded-xl'
-                                    : 'bg-muted px-3 py-2 rounded-xl'
-                                    }`}
-                            >
-                                <div className="prose dark:prose-invert max-w-none">
-                                    <ReactMarkdown
-                                        remarkPlugins={[remarkGfm, remarkMath]}
-                                        rehypePlugins={[rehypeKatex]}
-                                        components={markdownComponents}
-                                    >
-                                        {content}
-                                    </ReactMarkdown>
+                    <div className={`flex flex-col gap-4 ${getMessageContentClass(role as MessageRole)}`}>
+                        <div className="flex flex-col gap-2 w-full">
+                            {parts.map((part, i) => (
+                                <div
+                                    key={`${message.id}-${i}`}
+                                    className={`flex flex-col gap-4 ${getMessageBubbleClass(role as MessageRole, part.type as MessagePartType)}`}
+                                >
+                                    <MessageContent part={part as MessagePart} />
                                 </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>

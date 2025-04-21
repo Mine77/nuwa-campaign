@@ -17,7 +17,7 @@ const TableRows = ({ user }: { user: User }) => {
     return (
         <motion.tr
             layoutId={`row-${user.id}`}
-            className={`text-sm ${idLastChar % 2 ? "bg-slate-100" : "bg-white"}`}
+            className={`text-sm ${(user.rank ?? 0) % 2 === 0 ? "bg-white" : "bg-slate-100"}`}
         >
             <td className="p-4">
                 <div

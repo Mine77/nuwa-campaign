@@ -9,13 +9,13 @@ export const GridCards = () => {
                 <TitleCard />
                 <Card
                     href="#"
-                    title="AI Assistant Challenge"
+                    title="Follow X"
                     readTime="15 mins"
                     src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2264&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 />
                 <Card
                     href="#"
-                    title="Creative Writing Marathon"
+                    title="Connect Wallet"
                     readTime="30 mins"
                     src="https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=2379&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 />
@@ -23,19 +23,19 @@ export const GridCards = () => {
             <div className="mx-auto grid max-w-5xl grid-cols-1 divide-y divide-slate-300 border-x border-b border-slate-300 md:grid-cols-3 md:divide-x md:divide-y-0">
                 <Card
                     href="#"
-                    title="Digital Marketing Masterclass"
+                    title="Referral"
                     readTime="21 mins"
                     src="https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=2370&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 />
                 <Card
                     href="#"
-                    title="Social Media Influence Challenge"
+                    title="Lottery Ticket"
                     readTime="45 mins"
                     src="https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?q=80&w=2487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 />
                 <Card
                     href="#"
-                    title="Brand Story Creation Camp"
+                    title="coming up..."
                     readTime="14 mins"
                     src="https://images.unsplash.com/photo-1604076913837-52ab5629fba9?q=80&w=2487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 />

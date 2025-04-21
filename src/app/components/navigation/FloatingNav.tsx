@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FiUser, FiMessageSquare, FiAward, FiGrid } from "react-icons/fi";
+import { FiUser, FiAward, FiHome } from "react-icons/fi";
 import { IconType } from "react-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,24 +15,20 @@ export const FloatingNav = () => {
 
     const navItems: NavItem[] = [
         {
-            title: "My Profile",
-            icon: FiUser,
-            path: "/profile",
-        },
-        {
-            title: "Agent Campaign",
-            icon: FiMessageSquare,
-            path: "/agent",
-        },
-        {
-            title: "Other Campaign",
-            icon: FiGrid,
-            path: "/others",
+            title: "Home",
+            icon: FiHome,
+            path: "/",
+
         },
         {
             title: "Leaderboard",
             icon: FiAward,
             path: "/leaderboard",
+        },
+        {
+            title: "My Profile",
+            icon: FiUser,
+            path: "/profile",
         },
     ];
 
@@ -49,8 +45,8 @@ export const FloatingNav = () => {
                         key={item.path}
                         href={item.path}
                         className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${pathname === item.path
-                                ? "bg-violet-600 text-white"
-                                : "text-slate-600 hover:bg-slate-100"
+                            ? "bg-violet-600 text-white"
+                            : "text-slate-600 hover:bg-slate-100"
                             }`}
                     >
                         <item.icon className="w-4 h-4" />

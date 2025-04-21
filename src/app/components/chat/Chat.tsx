@@ -9,12 +9,12 @@ import { SuggestedActions } from './SuggestedActions';
 import { LoadingDots } from './LoadingDots';
 
 export function Chat() {
-    const { messages, input, handleInputChange, handleSubmit, status } = useChat();
+    const { messages, input, handleInputChange, handleSubmit, status, append } = useChat();
     const [messagesContainerRef, messagesEndRef] = useScrollToBottom<HTMLDivElement>();
 
     const handleSelectSuggestion = (suggestion: string) => {
         if (status === 'streaming') return;
-        handleSubmit(new Event('submit') as any, { data: { message: suggestion } });
+        append({ role: 'user', content: suggestion });
     };
 
     const handleInputChangeWrapper = (value: string) => {
@@ -39,9 +39,7 @@ export function Chat() {
                         {messages.map((message) => (
                             <MessageComponent
                                 key={message.id}
-                                content={message.content}
-                                role={message.role as 'user' | 'assistant'}
-                                isStreaming={status === 'streaming' && message.id === messages[messages.length - 1]?.id && message.content !== ''}
+                                message={message}
                             />
                         ))}
                         {(status === 'streaming' || status === 'submitted') && (

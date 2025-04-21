@@ -1,32 +1,35 @@
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { GridCards } from '../cards/GridCards';
 
 interface SuggestedActionsProps {
     onSelectSuggestion: (suggestion: string) => void;
 }
 
+const SUGGESTED_ACTIONS = [
+    {
+        title: "Twitter Score",
+        label: "Help me to evaluate my twitter score",
+        action: "I need help to evaluate my twitter score",
+    },
+    {
+        title: "Fortune Telling",
+        label: "Help me to evaluate my fortune",
+        action: "I need help to evaluate my fortune",
+    },
+    {
+        title: "Content Competition",
+        label: "I created content!",
+        action: "Help me to evaluate my content competition",
+    },
+    {
+        title: "Find Soulmate",
+        label: "I need a soulmate!",
+        action: "Help me to find my soulmate",
+    },
+] as const;
+
 export function SuggestedActions({ onSelectSuggestion }: SuggestedActionsProps) {
-    const suggestedActions = [
-        {
-            title: "Twitter Score",
-            label: "Help me to evaluate my twitter score",
-            action: "I need help to evaluate my twitter score",
-        },
-        {
-            title: "Fortune Telling",
-            label: "Help me to evaluate my fortune",
-            action: "I need help to evaluate my fortune",
-        },
-        {
-            title: "Content Competition",
-            label: "I created content!",
-            action: "Help me to evaluate my content competition",
-        },
-        {
-            title: "Meme Competition",
-            label: "I created Meme!",
-            action: "Help me to evaluate my meme competition",
-        },
-    ];
 
     return (
         <motion.div
@@ -35,7 +38,7 @@ export function SuggestedActions({ onSelectSuggestion }: SuggestedActionsProps) 
             transition={{ delay: 1.2 }}
             className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full mt-4"
         >
-            {suggestedActions.map((suggestion, index) => (
+            {SUGGESTED_ACTIONS.map((suggestion, index) => (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -55,6 +58,14 @@ export function SuggestedActions({ onSelectSuggestion }: SuggestedActionsProps) 
                     </button>
                 </motion.div>
             ))}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ delay: 1.6 }}
+                className="block sm:col-span-2"
+            >
+            </motion.div>
         </motion.div>
     );
 } 
