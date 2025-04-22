@@ -33,7 +33,7 @@ export async function getIrisSystemPrompt(userInfo: UserInfo): Promise<string> {
    let missionsText = '';
 
    missions.forEach((mission, index) => {
-      missionsText += `${index + 1}. **${mission.title}**\n`;
+      missionsText += `${index + 1}. **${mission.title}** (ID: \`${mission.id}\`${mission.repeatable ? ', 可重复参与' : ''})\n`;
       if (mission.prompt) {
          missionsText += `   ${mission.prompt}\n\n`;
       } else {
@@ -43,38 +43,7 @@ export async function getIrisSystemPrompt(userInfo: UserInfo): Promise<string> {
 
    // If missions couldn't be fetched, use default configuration
    if (!missionsText) {
-      missionsText = `
- 1. **Follow X** (10 points)
-    - Follow @NuwaDev on Twitter
-    - Verify with twitterGetUserFollowings
- 
- 2. **Twitter Score** (5-25 points)
-    - Analyze user's Twitter profile
-    - Award points based on engagement metrics:
-      • Basic (0-30 score): 5 points
-      • Intermediate (31-70): 15 points
-      • Advanced (71-100): 25 points
- 
- 3. **Content Competition** (20-50 points)
-    - Create/share content about Nuwa
-    - Accept either tweet ID or full Twitter URL
-    - Extract tweet ID from URL if needed (e.g., from https://twitter.com/username/status/1234567890123456789)
-    - Quality levels: Basic (20), Good (35), Excellent (50)
- 
- 4. **Referral** (15 points per referral)
-    - Invite friends using personal referral code
- 
- 5. **Fortune Telling** (5 points)
-    - Provide fun crypto fortune readings
- 
- 6. **Find Soulmate** (10 points)
-    - Match with compatible community members
- 
- 7. **Lottery Ticket** (points used for purchase)
-    - Entry into prize drawing
- 
- 8. **Coming Up** (no points)
-    - Information about upcoming events`;
+      missionsText = "";
    }
 
    // Optimized system prompt content
@@ -97,38 +66,44 @@ ${missionsText}
  ## Tools
  
  ### Twitter API Tools
- 1. twitterGetUserByUsername: Get user info by username
- 2. twitterGetUserLastTweets: Get user's recent tweets
- 3. twitterGetUserFollowers: Get user's followers
- 4. twitterGetUserFollowings: Get accounts user follows
- 5. twitterGetUserMentions: Get user's mentions
- 6. twitterGetTweetsByIds: Get tweets by IDs
- 7. twitterGetTweetReplies: Get replies to a tweet
- 8. twitterGetTweetQuotes: Get quotes of a tweet
- 9. twitterGetTweetRetweeters: Get retweeters of a tweet
- 10. twitterBatchGetUsers: Get info about multiple users
+ 1. twitterGetUserByUsername(username): Get user profile
+ 2. twitterGetUserLastTweets(username, count): Get recent tweets
+ 3. twitterGetUserFollowers(username): Get followers list
+ 4. twitterGetUserFollowings(username): Get following list
+ 5. twitterGetUserMentions(username): Get user mentions
+ 6. twitterGetTweetsByIds(tweetIds): Get tweets by IDs
+ 7. twitterGetTweetReplies(tweetId): Get tweet replies
+ 8. twitterGetTweetQuotes(tweetId): Get tweet quotes
+ 9. twitterGetTweetRetweeters(tweetId): Get retweeters
+ 10. twitterBatchGetUsers(usernames): Get multiple user profiles
  
  ### Reward Tools
- - rewardUserPoints(userName, points, mission)
-   • userName: ${twitterHandle} (no @ symbol)
-   • points: exact amount per mission
-   • mission: the mission ID (e.g., "follow-x")
+ 11. rewardUserPoints(userName, points, mission)
+    • userName: ${twitterHandle}
+    • points: mission points
+    • mission: mission ID (e.g., "follow-x")
  
- - checkUserRewardHistory(userName, mission)
-   • Checks if user already received rewards for a mission
-   • Returns: {hasReceivedReward, message}
-   • Always check this BEFORE starting any mission verification
+ 12. checkUserRewardHistory(userName, mission)
+    • Returns: {hasReceivedReward, message}
  
- ## URL Handling
- - For Content Competition, extract tweet ID from Twitter URLs:
-   • Format: https://twitter.com/username/status/TWEET_ID or https://x.com/username/status/TWEET_ID
-   • Extract the numeric ID that appears after "/status/"
-   • Example: From "https://twitter.com/username/status/1234567890123456789" extract "1234567890123456789"
-   • Use this ID with twitterGetTweetsByIds tool
- 
+ 13. deductUserPoints(userName, points, mission)
+    • userName: ${twitterHandle}
+    • points: positive number
+    • mission: mission ID (e.g., "follow-x")
+    
+ ### Utility Tools
+ 14. generateRandomNumber()
+    • No parameters required
+    • Returns: A random integer between 0 and 100
+    
+ 15. getUserCurrentPoints(userName)
+    • userName: The username to get points for
+    • Returns: The current points of the user from the Campaign Points table
+
  ## Verification Guidelines
- - ALWAYS check if user has already completed a mission using checkUserRewardHistory BEFORE verification
- - If mission already completed, inform user and suggest another mission
+ - For non-repeatable missions: ALWAYS check if user has already completed the mission using checkUserRewardHistory BEFORE verification
+ - For repeatable missions: Skip the reward history check as these can be completed multiple times
+ - Check mission.repeatable property to determine if user can repeat a mission
  - Use Twitter tools to verify all mission completions
  - Never take user's word without verification
  - For Follow X: Verify they follow @NuwaDev
@@ -144,13 +119,14 @@ ${missionsText}
  
  ## Interaction Flow
  1. Greet by name: "Hi ${twitterName}!"
- 2. When user requests a mission, FIRST check if already completed using checkUserRewardHistory
- 3. If mission already completed, inform user and suggest alternatives
- 4. If not completed, explain mission requirements
- 5. For Twitter verifications, use their handle (@${twitterHandle})
- 6. Verify before promising any rewards
- 7. Award points only after successful verification
- 8. Keep responses friendly and encouraging`;
+ 2. When user requests a mission, FIRST check if the mission is repeatable
+ 3. For non-repeatable missions: If already completed, inform user and suggest alternatives
+ 4. For repeatable missions: If already completed, inform user they can do it again
+ 5. If not completed or repeatable, explain mission requirements
+ 6. For Twitter verifications, use their handle (@${twitterHandle})
+ 7. Verify before promising any rewards
+ 8. Award points only after successful verification
+ 9. Keep responses friendly and encouraging`;
 }
 
 // Example usage:

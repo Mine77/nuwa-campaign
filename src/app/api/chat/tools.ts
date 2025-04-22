@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { addRewardToAirtable, checkUserRewardHistory } from '@/app/services/airtable';
+import { updateReward, checkUserRewardHistory, getUserPoints } from '@/app/services/airtable';
 
 // 通用Twitter API调用函数
 async function callTwitterApi(endpoint: string, params: Record<string, string> = {}) {
@@ -254,17 +254,7 @@ export const tools = {
         }),
         execute: async ({ userName, points, mission }) => {
             try {
-                // 首先检查用户是否已经获得过该任务的奖励
-                const hasReceivedReward = await checkUserRewardHistory(userName, mission);
-
-                if (hasReceivedReward) {
-                    return {
-                        success: false,
-                        message: `User ${userName} has already received rewards for mission: ${mission}. Cannot reward again.`
-                    };
-                }
-
-                const success = await addRewardToAirtable({
+                const success = await updateReward({
                     userName,
                     points,
                     mission
@@ -311,6 +301,92 @@ export const tools = {
                 return {
                     hasReceivedReward: false,
                     message: `Error checking reward history: ${error instanceof Error ? error.message : String(error)}`
+                };
+            }
+        },
+    }),
+
+    // 13. 扣除用户积分
+    deductUserPoints: tool({
+        description: 'Deduct points from a user',
+        parameters: z.object({
+            userName: z.string().describe('The username of the user to deduct points from'),
+            points: z.number().describe('The amount of points to be deducted (positive number)'),
+            reason: z.string().describe('The reason for deducting points'),
+        }),
+        execute: async ({ userName, points, reason }) => {
+            try {
+                if (points <= 0) {
+                    return {
+                        success: false,
+                        message: `Points to deduct must be a positive number`
+                    };
+                }
+
+                const success = await updateReward({
+                    userName,
+                    points: -points, // 传递负值以扣除积分
+                    mission: reason
+                });
+
+                if (success) {
+                    return {
+                        success: true,
+                        message: `Successfully deducted ${points} points from user ${userName} for reason: ${reason}`
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: `Failed to deduct points from user ${userName}`
+                    };
+                }
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `Error deducting points: ${error instanceof Error ? error.message : String(error)}`
+                };
+            }
+        },
+    }),
+
+    // 14. 生成随机数
+    generateRandomNumber: tool({
+        description: 'Generate a random integer between 0 and 100',
+        parameters: z.object({}),
+        execute: async () => {
+            try {
+                // 生成0到100之间的随机整数
+                const randomNumber = Math.floor(Math.random() * 101);
+
+                return randomNumber;
+            } catch (error) {
+                return {
+                    error: `Error generating random number: ${error instanceof Error ? error.message : String(error)}`
+                };
+            }
+        },
+    }),
+
+    // 15. 获取用户当前积分
+    getUserCurrentPoints: tool({
+        description: 'Get the current points of a user from the Campaign Points table',
+        parameters: z.object({
+            userName: z.string().describe('The username to get points for'),
+        }),
+        execute: async ({ userName }) => {
+            try {
+                const result = await getUserPoints(userName);
+
+                if (!result.success) {
+                    return {
+                        error: result.error || 'Failed to get user points'
+                    };
+                }
+
+                return result.points;
+            } catch (error) {
+                return {
+                    error: `Error getting user points: ${error instanceof Error ? error.message : String(error)}`
                 };
             }
         },

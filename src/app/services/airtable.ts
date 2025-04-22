@@ -39,6 +39,7 @@ export interface Mission {
     suggested?: boolean;
     prompt?: string;
     order?: number;
+    repeatable?: boolean;
 }
 
 // Submit form data to Airtable
@@ -94,7 +95,7 @@ export const getLeaderboardData = async (): Promise<LeaderboardUser[]> => {
 };
 
 // Add reward record to Airtable
-export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ success: boolean; error?: string }> => {
+export const updateReward = async (rewardData: RewardData): Promise<{ success: boolean; error?: string }> => {
     try {
         // First add reward record
         const rewardTable = base('Points Reward Log');
@@ -174,11 +175,38 @@ export const getMissions = async (): Promise<Mission[]> => {
             suggested: record.get('suggested') as boolean || false,
             prompt: record.get('Prompt') as string || '',
             order: record.get('order') as number || 0,
+            repeatable: record.get('repeatable') as boolean || false,
         }));
 
         return missions;
     } catch (error) {
         console.error('Error fetching missions from Airtable:', error);
         return [];
+    }
+};
+
+// Get user's current points
+export const getUserPoints = async (userName: string): Promise<{ points: number; success: boolean; error?: string }> => {
+    try {
+        const table = base('Campaign Points');
+
+        // Find user record
+        const records = await table.select({
+            filterByFormula: `{Handle} = '${userName}'`,
+            maxRecords: 1
+        }).all();
+
+        if (records.length === 0) {
+            return { points: 0, success: false, error: 'User not found' };
+        }
+
+        // Get user points
+        const record = records[0];
+        const points = record.get('Points') as number || 0;
+
+        return { points, success: true };
+    } catch (error) {
+        console.error('Error fetching user points from Airtable:', error);
+        return { points: 0, success: false, error: 'Failed to fetch user points' };
     }
 }; 
