@@ -40,17 +40,10 @@ export function Missions({
                 >
                     <FiX className="text-xl text-slate-800" />
                 </motion.button>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ delay: 0.1, duration: 0.5 }}
-                >
-                    <GridCards
-                        onSelectSuggestion={onSelectSuggestion}
-                        onCloseGridCards={onCloseGridCards}
-                    />
-                </motion.div>
+                <GridCards
+                    onSelectSuggestion={onSelectSuggestion}
+                    onCloseGridCards={onCloseGridCards}
+                />
             </motion.div>
         );
     }
