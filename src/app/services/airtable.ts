@@ -1,11 +1,11 @@
 import Airtable from 'airtable';
 
-// 初始化Airtable客户端
+// Initialize Airtable client
 const base = new Airtable({
     apiKey: process.env.NEXT_PUBLIC_AIRTABLE_API_KEY
 }).base(process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID || '');
 
-// 定义表单数据的接口
+// Form data interface
 export interface FormData {
     email: string;
     agentname: string;
@@ -13,7 +13,7 @@ export interface FormData {
     description?: string;
 }
 
-// 定义排行榜用户数据的接口
+// Leaderboard user data interface
 export interface LeaderboardUser {
     id: string;
     name: string;
@@ -23,20 +23,30 @@ export interface LeaderboardUser {
     rank?: number;
 }
 
-// 定义奖励记录数据的接口
+// Reward data interface
 export interface RewardData {
     userName: string;
     points: number;
     mission: string;
 }
 
-// 提交表单数据到Airtable
+// Mission data interface
+export interface Mission {
+    id: string;
+    title: string;
+    description: string;
+    suggestionText: string;
+    suggested?: boolean;
+    prompt?: string;
+}
+
+// Submit form data to Airtable
 export const submitFormToAirtable = async (formData: FormData): Promise<boolean> => {
     try {
-        // 假设您的表名为"Contacts"
+        // Assuming your table name is "Contacts"
         const table = base('Early Access Registry');
 
-        // 创建记录
+        // Create record
         await table.create([
             {
                 fields: {
@@ -55,17 +65,17 @@ export const submitFormToAirtable = async (formData: FormData): Promise<boolean>
     }
 };
 
-// 获取排行榜数据
+// Get leaderboard data
 export const getLeaderboardData = async (): Promise<LeaderboardUser[]> => {
     try {
         const table = base('Campaign Points');
 
-        // 获取所有记录，按Points字段降序排序
+        // Get all records, sorted by Points field in descending order
         const records = await table.select({
             sort: [{ field: 'Points', direction: 'desc' }]
         }).all();
 
-        // 转换记录为LeaderboardUser格式
+        // Convert records to LeaderboardUser format
         const users: LeaderboardUser[] = records.map((record, index) => ({
             id: record.id,
             name: record.get('Name') as string,
@@ -82,10 +92,10 @@ export const getLeaderboardData = async (): Promise<LeaderboardUser[]> => {
     }
 };
 
-// 添加奖励记录到Airtable
+// Add reward record to Airtable
 export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ success: boolean; error?: string }> => {
     try {
-        // 先添加奖励记录
+        // First add reward record
         const rewardTable = base('Points Reward Log');
         await rewardTable.create([
             {
@@ -97,10 +107,10 @@ export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ suc
             }
         ], { typecast: true });
 
-        // 奖励记录添加成功后，更新用户总积分
+        // After successfully adding reward record, update user's total points
         const pointsTable = base('Campaign Points');
 
-        // 查找用户记录
+        // Find user record
         const records = await pointsTable.select({
             filterByFormula: `{Handle} = '${rewardData.userName}'`,
             maxRecords: 1
@@ -110,7 +120,7 @@ export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ suc
             return { success: false, error: 'User not found' };
         }
 
-        // 更新现有用户积分
+        // Update existing user points
         const record = records[0];
         const currentPoints = record.get('Points') as number || 0;
 
@@ -125,21 +135,46 @@ export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ suc
     }
 };
 
-// 检查用户是否已经从特定任务获得过奖励
+// Check if user has already received reward for a specific mission
 export const checkUserRewardHistory = async (userName: string, mission: string): Promise<boolean> => {
     try {
         const table = base('Points Reward Log');
 
-        // 查询记录
+        // Query records
         const records = await table.select({
             filterByFormula: `AND({RewardTo} = '${userName}', {Mission} = '${mission}')`,
             maxRecords: 1
         }).all();
 
-        // 如果找到记录，说明用户已经获得过该任务的奖励
+        // If records are found, user has already received reward for this mission
         return records.length > 0;
     } catch (error) {
         console.error('Error checking user reward history from Airtable:', error);
         return false;
+    }
+};
+
+// Get all missions data
+export const getMissions = async (): Promise<Mission[]> => {
+    try {
+        const table = base('Missions');
+
+        // Get all records
+        const records = await table.select().all();
+
+        // Convert records to Mission format
+        const missions: Mission[] = records.map((record) => ({
+            id: record.get('id') as string,
+            title: record.get('title') as string,
+            description: record.get('description') as string,
+            suggestionText: record.get('suggestionText') as string,
+            suggested: record.get('suggested') as boolean || false,
+            prompt: record.get('Prompt') as string || '',
+        }));
+
+        return missions;
+    } catch (error) {
+        console.error('Error fetching missions from Airtable:', error);
+        return [];
     }
 }; 

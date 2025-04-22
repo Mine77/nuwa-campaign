@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { FiBookOpen, FiCheckCircle, FiCircle, FiWatch } from "react-icons/fi";
-import { FiArrowUpRight } from "react-icons/fi";
-import { MISSIONS, Mission } from "../chat/missionsData";
+import React from "react";
+import { FiCheckCircle, FiCircle } from "react-icons/fi";
+import { useMissions } from "../../context/MissionsContext";
+import { Mission } from "../../services/airtable";
 
-// 统一的图片URL
+// Standard image URL
 const UNIFIED_IMAGE_URL = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2264&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 interface GridCardsProps {
@@ -12,11 +12,21 @@ interface GridCardsProps {
 }
 
 export const GridCards = ({ onSelectSuggestion, onCloseGridCards }: GridCardsProps) => {
+    const { missions, loading, error } = useMissions();
+
+    if (loading) {
+        return <div className="p-4 text-center">Loading missions...</div>;
+    }
+
+    if (error) {
+        return <div className="p-4 text-center text-red-500">Failed to load missions</div>;
+    }
+
     return (
         <div className="p-4 text-slate-800 md:p-12">
             <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-4 ">
                 <TitleCard />
-                {MISSIONS.map((mission) => (
+                {missions.map((mission) => (
                     <Card
                         key={mission.id}
                         mission={mission}
@@ -53,10 +63,6 @@ const Card = ({ mission, onSelectSuggestion, onCloseGridCards }: CardProps) => {
             onClick={handleClick}
             className="group relative flex h-56 flex-col justify-end overflow-hidden p-6 transition-colors hover:bg-slate-100 md:h-80 md:p-9 border border-slate-300"
         >
-            <div className="absolute left-3 top-5 z-10 flex items-center gap-1.5 text-xs uppercase text-slate-600 transition-colors duration-500 group-hover:text-slate-800">
-                <FiWatch className="text-base" />
-                <span>{mission.readTime || "5 mins"}</span>
-            </div>
             <h2 className="relative z-10 text-3xl leading-tight text-slate-800 transition-transform duration-500 group-hover:-translate-y-3">
                 {mission.title}
             </h2>

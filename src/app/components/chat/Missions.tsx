@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { FiX } from 'react-icons/fi';
 import { GridCards } from '../cards/GridCards';
 import DotExpandButton from './DotExpandButton';
-import { SuggestedActions } from './SuggestedActions';
+import { SuggestedMissions } from './SuggestedMissions';
 
 interface MissionsProps {
     showGridCards: boolean;
@@ -76,7 +76,7 @@ export function Missions({
                     />
                 </motion.div>
             </motion.div>
-            <SuggestedActions onSelectSuggestion={onSelectSuggestion} />
+            <SuggestedMissions onSelectSuggestion={onSelectSuggestion} />
         </div>
     );
 } 

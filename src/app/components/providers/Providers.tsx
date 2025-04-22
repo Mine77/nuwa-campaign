@@ -2,6 +2,7 @@
 
 import { SessionProvider, useSession } from "next-auth/react";
 import { FloatingNav } from "../navigation/FloatingNav";
+import { MissionsProvider } from "../../context/MissionsContext";
 
 function NavWrapper() {
     const { data: session, status } = useSession();
@@ -16,8 +17,10 @@ function NavWrapper() {
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
         <SessionProvider>
-            <NavWrapper />
-            {children}
+            <MissionsProvider>
+                <NavWrapper />
+                {children}
+            </MissionsProvider>
         </SessionProvider>
     );
 } 

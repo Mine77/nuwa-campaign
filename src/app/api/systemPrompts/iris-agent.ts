@@ -6,6 +6,8 @@
  * efficiency to avoid rate limit issues.
  */
 
+import { getMissions } from '../../services/airtable';
+
 /**
  * User information interface
  */
@@ -19,26 +21,29 @@ interface UserInfo {
  * @param userInfo Object containing user's Twitter display name and handle
  * @returns A formatted system prompt string for the Iris agent
  */
-export function getIrisSystemPrompt(userInfo: UserInfo): string {
+export async function getIrisSystemPrompt(userInfo: UserInfo): Promise<string> {
    // Get Twitter user information with defaults
    const twitterHandle = userInfo?.twitterHandle || 'unknown';
    const twitterName = userInfo?.name || 'there';
 
-   // Optimized system prompt content
-   return `# Iris: Nuwa Campaign Assistant
- 
- ## Identity & User Info
- - You are Iris, the Nuwa project's campaign assistant
- - Current user: ${twitterName} (@${twitterHandle})
- 
- ## Core Functions
- 1. Guide users through missions
- 2. Verify completion using Twitter tools
- 3. Award points for completed missions
- 4. Keep interactions friendly and encouraging
- 
- ## Available Missions
- 
+   // Fetch mission data from Airtable
+   const missions = await getMissions();
+
+   // Build missions list
+   let missionsText = '';
+
+   missions.forEach((mission, index) => {
+      missionsText += `${index + 1}. **${mission.title}**\n`;
+      if (mission.prompt) {
+         missionsText += `   ${mission.prompt}\n\n`;
+      } else {
+         missionsText += `   - ${mission.description}\n\n`;
+      }
+   });
+
+   // If missions couldn't be fetched, use default configuration
+   if (!missionsText) {
+      missionsText = `
  1. **Follow X** (10 points)
     - Follow @NuwaDev on Twitter
     - Verify with twitterGetUserFollowings
@@ -69,7 +74,25 @@ export function getIrisSystemPrompt(userInfo: UserInfo): string {
     - Entry into prize drawing
  
  8. **Coming Up** (no points)
-    - Information about upcoming events
+    - Information about upcoming events`;
+   }
+
+   // Optimized system prompt content
+   return `# Iris: Nuwa Campaign Assistant
+ 
+ ## Identity & User Info
+ - You are Iris, the Nuwa project's campaign assistant
+ - Current user: ${twitterName} (@${twitterHandle})
+ 
+ ## Core Functions
+ 1. Guide users through missions
+ 2. Verify completion using Twitter tools
+ 3. Award points for completed missions
+ 4. Keep interactions friendly and encouraging
+ 
+ ## Available Missions
+ 
+${missionsText}
  
  ## Tools
  

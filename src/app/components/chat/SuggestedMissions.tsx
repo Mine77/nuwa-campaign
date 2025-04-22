@@ -1,12 +1,25 @@
 import { motion } from 'framer-motion';
-import { MISSIONS } from './missionsData';
+import { useMissions } from '../../context/MissionsContext';
 
-interface SuggestedActionsProps {
+interface SuggestedMissionsProps {
     onSelectSuggestion: (suggestion: string) => void;
 }
 
-export function SuggestedActions({ onSelectSuggestion }: SuggestedActionsProps) {
-    const suggestedMissions = MISSIONS.filter(mission => mission.suggested);
+export function SuggestedMissions({ onSelectSuggestion }: SuggestedMissionsProps) {
+    const { missions, loading, error } = useMissions();
+    const suggestedMissions = missions.filter(mission => mission.suggested);
+
+    if (loading) {
+        return <div className="text-center py-4">Loading missions...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center py-4 text-red-500">Failed to load missions</div>;
+    }
+
+    if (suggestedMissions.length === 0) {
+        return <div className="text-center py-4">No suggested missions available</div>;
+    }
 
     return (
         <motion.div
@@ -35,14 +48,6 @@ export function SuggestedActions({ onSelectSuggestion }: SuggestedActionsProps) 
                     </button>
                 </motion.div>
             ))}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ delay: 1.6 }}
-                className="block sm:col-span-2"
-            >
-            </motion.div>
         </motion.div>
     );
 } 

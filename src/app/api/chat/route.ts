@@ -13,8 +13,8 @@ export async function POST(req: Request) {
         throw new Error('OPENAI_API_KEY is not set');
     }
 
-    // 使用客户端传递的用户信息生成系统提示
-    const systemPrompt = getIrisSystemPrompt(userInfo || {});
+    // Generate system prompt using user information passed from client
+    const systemPrompt = await getIrisSystemPrompt(userInfo || {});
 
     const result = await streamText({
         model: openai('gpt-4o'),
