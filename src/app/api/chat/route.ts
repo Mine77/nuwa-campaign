@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     if (!process.env.OPENAI_API_KEY) {
         throw new Error('OPENAI_API_KEY is not set');
     }
-    console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY);
+
     // 使用客户端传递的用户信息生成系统提示
     const systemPrompt = getIrisSystemPrompt(userInfo || {});
 
