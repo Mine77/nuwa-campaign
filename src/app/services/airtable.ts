@@ -38,6 +38,7 @@ export interface Mission {
     suggestionText: string;
     suggested?: boolean;
     prompt?: string;
+    order?: number;
 }
 
 // Submit form data to Airtable
@@ -159,8 +160,10 @@ export const getMissions = async (): Promise<Mission[]> => {
     try {
         const table = base('Missions');
 
-        // Get all records
-        const records = await table.select().all();
+        // Get all records with sorting by order field
+        const records = await table.select({
+            sort: [{ field: 'order', direction: 'asc' }]
+        }).all();
 
         // Convert records to Mission format
         const missions: Mission[] = records.map((record) => ({
@@ -170,6 +173,7 @@ export const getMissions = async (): Promise<Mission[]> => {
             suggestionText: record.get('suggestionText') as string,
             suggested: record.get('suggested') as boolean || false,
             prompt: record.get('Prompt') as string || '',
+            order: record.get('order') as number || 0,
         }));
 
         return missions;

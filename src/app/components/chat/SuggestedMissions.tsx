@@ -7,6 +7,7 @@ interface SuggestedMissionsProps {
 
 export function SuggestedMissions({ onSelectSuggestion }: SuggestedMissionsProps) {
     const { missions, loading, error } = useMissions();
+    // Filter suggested missions while preserving original order
     const suggestedMissions = missions.filter(mission => mission.suggested);
 
     if (loading) {
