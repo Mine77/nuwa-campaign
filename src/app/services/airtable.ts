@@ -83,8 +83,29 @@ export const getLeaderboardData = async (): Promise<LeaderboardUser[]> => {
 };
 
 // 添加奖励记录到Airtable
-export const addRewardToAirtable = async (rewardData: RewardData): Promise<boolean> => {
+export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ success: boolean; error?: string }> => {
     try {
+        // 更新用户总积分
+        const pointsTable = base('Campaign Points');
+
+        // 查找用户记录
+        const records = await pointsTable.select({
+            filterByFormula: `{Handle} = '${rewardData.userName}'`,
+            maxRecords: 1
+        }).all();
+
+        if (records.length === 0) {
+            return { success: false, error: 'User not found' };
+        }
+
+        // 更新现有用户积分
+        const record = records[0];
+        const currentPoints = record.get('Points') as number || 0;
+
+        await pointsTable.update(record.id, {
+            Points: currentPoints + rewardData.points
+        });
+
         // 添加奖励记录
         const rewardTable = base('Points Reward Log');
         await rewardTable.create([
@@ -97,41 +118,10 @@ export const addRewardToAirtable = async (rewardData: RewardData): Promise<boole
             }
         ]);
 
-        // 更新用户总积分
-        const pointsTable = base('Campaign Points');
-
-        // 查找用户记录
-        const records = await pointsTable.select({
-            filterByFormula: `{Handle} = '${rewardData.userName}'`,
-            maxRecords: 1
-        }).all();
-
-        if (records.length > 0) {
-            // 更新现有用户积分
-            const record = records[0];
-            const currentPoints = record.get('Points') as number || 0;
-
-            await pointsTable.update(record.id, {
-                Points: currentPoints + rewardData.points
-            });
-        } else {
-            // 创建新用户记录
-            await pointsTable.create([
-                {
-                    fields: {
-                        Handle: rewardData.userName,
-                        Name: rewardData.userName, // 使用userName作为初始名称
-                        Points: rewardData.points,
-                        Avatar: '', // 设置默认空头像
-                    }
-                }
-            ]);
-        }
-
-        return true;
+        return { success: true };
     } catch (error) {
         console.error('Error adding reward to Airtable:', error);
-        return false;
+        return { success: false, error: 'Failed to add reward' };
     }
 };
 

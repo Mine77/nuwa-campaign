@@ -289,4 +289,30 @@ export const tools = {
             }
         },
     }),
+
+    // 12. 检查用户是否已经从特定任务获得过奖励
+    checkUserRewardHistory: tool({
+        description: 'Check if a user has already received rewards for a specific mission',
+        parameters: z.object({
+            userName: z.string().describe('The username to check'),
+            mission: z.string().describe('The mission to check'),
+        }),
+        execute: async ({ userName, mission }) => {
+            try {
+                const hasReceivedReward = await checkUserRewardHistory(userName, mission);
+
+                return {
+                    hasReceivedReward,
+                    message: hasReceivedReward
+                        ? `User ${userName} has already received rewards for mission: ${mission}`
+                        : `User ${userName} has not received rewards for mission: ${mission} yet`
+                };
+            } catch (error) {
+                return {
+                    hasReceivedReward: false,
+                    message: `Error checking reward history: ${error instanceof Error ? error.message : String(error)}`
+                };
+            }
+        },
+    }),
 }; 
