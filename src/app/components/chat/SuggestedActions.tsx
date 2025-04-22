@@ -26,10 +26,10 @@ export function SuggestedActions({ onSelectSuggestion }: SuggestedActionsProps) 
                 >
                     <button
                         onClick={() => onSelectSuggestion(mission.suggestionText)}
-                        className="text-left border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm w-full h-auto flex flex-col justify-start items-start hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        className="text-left border border-gray-200 rounded-xl px-4 py-3 text-sm w-full h-auto flex flex-col justify-start items-start hover:bg-gray-100 transition-colors"
                     >
                         <span className="font-medium">{mission.title}</span>
-                        <span className="text-gray-500 dark:text-gray-400">
+                        <span className="text-gray-500">
                             {mission.description}
                         </span>
                     </button>

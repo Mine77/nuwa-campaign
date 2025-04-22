@@ -49,7 +49,7 @@ export function Missions({
     }
 
     return (
-        <>
+        <div className="flex flex-col w-full px-8">
             <motion.div
                 className="flex items-center justify-between mb-4"
                 initial={{ opacity: 0 }}
@@ -78,6 +78,6 @@ export function Missions({
                 </motion.div>
             </motion.div>
             <SuggestedActions onSelectSuggestion={onSelectSuggestion} />
-        </>
+        </div>
     );
 } 

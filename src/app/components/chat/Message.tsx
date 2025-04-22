@@ -47,7 +47,7 @@ const getMessageBubbleClass = (role: MessageRole, partType?: MessagePartType): s
             return 'bg-indigo-600 text-white [&_*]:text-white px-3 py-2 rounded-xl';
         default:
             return partType === 'tool-invocation'
-                ? 'bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800'
+                ? 'bg-blue-50 px-3 py-2 rounded-xl border border-blue-200'
                 : 'bg-muted px-3 py-2 rounded-xl';
     }
 };
@@ -185,12 +185,12 @@ const ToolInvocationContent: React.FC<{ toolInvocation: any }> = ({ toolInvocati
                 </svg>
             </div>
             <div className="flex-1">
-                <div className="font-medium text-blue-700 dark:text-blue-300">
+                <div className="font-medium text-blue-700">
                     Use tool: {toolInvocation.toolName || 'Tool Invocation'}
                 </div>
                 {renderStateIndicator()}
                 {toolInvocation.args && (
-                    <div className="text-blue-600 dark:text-blue-400 text-xs mt-1">
+                    <div className="text-blue-600 text-xs mt-1">
                         {Object.entries(toolInvocation.args).map(([key, value]) => (
                             <div key={key} className="flex gap-1">
                                 <span className="font-medium">{key}:</span>
@@ -211,7 +211,7 @@ const MessageContent: React.FC<{ part: MessagePart }> = ({ part }) => {
             return <ToolInvocationContent toolInvocation={part.toolInvocation} />;
         case 'text':
             return (
-                <div className="prose dark:prose-invert max-w-none">
+                <div className="prose max-w-none">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath]}
                         rehypePlugins={[rehypeKatex]}

@@ -21,7 +21,7 @@ export const Greeting = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ delay: 0.6 }}
-                className="text-lg text-gray-500 dark:text-gray-400 mt-2"
+                className="text-lg text-gray-500"
             >
                 Are you ready to take on some missions?
             </motion.div>

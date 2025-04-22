@@ -21,7 +21,7 @@ export function MessageContainer({
             ref={messagesContainerRef}
             role="log"
             aria-live="polite"
-            className={`flex-1 p-4 space-y-4 bg-white dark:bg-gray-900 ${messages.length > 0 ? 'overflow-y-auto' : 'overflow-hidden'}`}
+            className={`flex-1 p-4 space-y-4 bg-white ${messages.length > 0 ? 'overflow-y-auto' : 'overflow-hidden'}`}
         >
             {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full">
