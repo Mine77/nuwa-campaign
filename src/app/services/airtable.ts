@@ -95,7 +95,7 @@ export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ suc
                     Mission: rewardData.mission,
                 }
             }
-        ]);
+        ], { typecast: true });
 
         // 奖励记录添加成功后，更新用户总积分
         const pointsTable = base('Campaign Points');
