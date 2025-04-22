@@ -1,5 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
+import { addRewardToAirtable, checkUserRewardHistory } from '@/app/services/airtable';
 
 // 通用Twitter API调用函数
 async function callTwitterApi(endpoint: string, params: Record<string, string> = {}) {
@@ -52,19 +53,6 @@ async function callTwitterApi(endpoint: string, params: Record<string, string> =
 }
 
 export const tools = {
-    weather: tool({
-        description: 'Get the weather in a location (fahrenheit)',
-        parameters: z.object({
-            location: z.string().describe('The location to get the weather for'),
-        }),
-        execute: async ({ location }) => {
-            const temperature = Math.round(Math.random() * (90 - 32) + 32);
-            return {
-                location,
-                temperature,
-            };
-        },
-    }),
 
     // 1. 批量获取用户信息
     twitterBatchGetUsers: tool({
@@ -253,6 +241,52 @@ export const tools = {
             }
 
             return callTwitterApi('tweet/retweeters', params);
+        },
+    }),
+
+    // 11. 奖励用户代币
+    rewardUserPoints: tool({
+        description: 'Reward points to a user for completing a mission',
+        parameters: z.object({
+            userName: z.string().describe('The username of the reward receiver'),
+            points: z.number().describe('The amount of points to be rewarded'),
+            mission: z.string().describe('The mission that was completed'),
+        }),
+        execute: async ({ userName, points, mission }) => {
+            try {
+                // 首先检查用户是否已经获得过该任务的奖励
+                const hasReceivedReward = await checkUserRewardHistory(userName, mission);
+
+                if (hasReceivedReward) {
+                    return {
+                        success: false,
+                        message: `User ${userName} has already received rewards for mission: ${mission}. Cannot reward again.`
+                    };
+                }
+
+                const success = await addRewardToAirtable({
+                    userName,
+                    points,
+                    mission
+                });
+
+                if (success) {
+                    return {
+                        success: true,
+                        message: `Successfully rewarded ${points} points to user ${userName} for completing mission: ${mission}`
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: `Failed to reward points to user ${userName}`
+                    };
+                }
+            } catch (error) {
+                return {
+                    success: false,
+                    message: `Error rewarding points: ${error instanceof Error ? error.message : String(error)}`
+                };
+            }
         },
     }),
 }; 

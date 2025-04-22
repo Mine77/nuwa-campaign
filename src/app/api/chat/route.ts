@@ -18,7 +18,7 @@ export async function POST(req: Request) {
         const systemPrompt = getIrisSystemPrompt(userInfo || {});
 
         const result = await streamText({
-            model: anthropic('claude-3-haiku-20240307'),
+            model: anthropic('claude-3-5-sonnet-20241022'),
             messages,
             tools,
             system: systemPrompt,
