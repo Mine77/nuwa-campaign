@@ -85,7 +85,19 @@ export const getLeaderboardData = async (): Promise<LeaderboardUser[]> => {
 // 添加奖励记录到Airtable
 export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ success: boolean; error?: string }> => {
     try {
-        // 更新用户总积分
+        // 先添加奖励记录
+        const rewardTable = base('Points Reward Log');
+        await rewardTable.create([
+            {
+                fields: {
+                    RewardTo: rewardData.userName,
+                    Points: rewardData.points,
+                    Mission: rewardData.mission,
+                }
+            }
+        ]);
+
+        // 奖励记录添加成功后，更新用户总积分
         const pointsTable = base('Campaign Points');
 
         // 查找用户记录
@@ -105,18 +117,6 @@ export const addRewardToAirtable = async (rewardData: RewardData): Promise<{ suc
         await pointsTable.update(record.id, {
             Points: currentPoints + rewardData.points
         });
-
-        // 添加奖励记录
-        const rewardTable = base('Points Reward Log');
-        await rewardTable.create([
-            {
-                fields: {
-                    RewardTo: rewardData.userName,
-                    Points: rewardData.points,
-                    Mission: rewardData.mission,
-                }
-            }
-        ]);
 
         return { success: true };
     } catch (error) {

@@ -240,11 +240,12 @@ const Avatar: React.FC<{ role: MessageRole }> = ({ role }) => {
     if (role !== 'assistant') return null;
 
     return (
-        <div className="size-10 flex items-center rounded-full justify-center shrink-0">
-            <img
+        <div className="size-10 flex items-center rounded-full justify-center shrink-0 pt-10">
+            <Image
                 src="/nuwa.svg"
                 alt="Nuwa Logo"
-                className="size-6"
+                width={30}
+                height={30}
             />
         </div>
     );
