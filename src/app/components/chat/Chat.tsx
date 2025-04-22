@@ -98,7 +98,7 @@ export function Chat() {
                     >
                         <div className="flex flex-col h-full">
                             {messages.length > 0 && status !== 'streaming' && (
-                                <div className="flex justify-start p-2">
+                                <div className="flex justify-end p-2">
                                     <DotExpandButton
                                         text="Start New Chat"
                                         onClick={handleNewChat}
