@@ -17,7 +17,6 @@ export function Missions({
     onSelectSuggestion,
     onShowGridCards
 }: MissionsProps) {
-    console.log("Missions component rendered, onSelectSuggestion:", !!onSelectSuggestion);
 
     if (showGridCards) {
         return (

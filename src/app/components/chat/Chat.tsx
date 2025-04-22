@@ -2,7 +2,7 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useScrollToBottom } from './useScrollToBottom';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import { Missions } from './Missions';
@@ -16,6 +16,9 @@ export function Chat() {
         name: session?.user?.name || "visitor",
         twitterHandle: session?.user?.twitterHandle || "visitor"
     };
+
+    // 保存最后一条用户消息，用于重试
+    const lastUserMessageRef = useRef<string>('');
 
     const { messages, input, handleInputChange, handleSubmit, status, append, setMessages } = useChat({
         body: {
@@ -32,6 +35,7 @@ export function Chat() {
             return;
         }
         console.log("Appending suggestion to chat");
+        lastUserMessageRef.current = suggestion;
         append({ role: 'user', content: suggestion });
     };
 
@@ -51,6 +55,27 @@ export function Chat() {
         if (status === 'streaming') return;
         setMessages([]);
         handleInputChangeWrapper('');
+        lastUserMessageRef.current = '';
+    };
+
+    // 处理表单提交，保存最后一条用户消息
+    const handleSubmitWrapper = (e: React.FormEvent<HTMLFormElement>) => {
+        if (input.trim()) {
+            lastUserMessageRef.current = input;
+        }
+        handleSubmit(e);
+    };
+
+    // 重试功能
+    const handleRetry = () => {
+        if (lastUserMessageRef.current) {
+            // 移除最后一条消息（通常是错误消息）
+            if (messages.length > 0) {
+                setMessages(messages.slice(0, -1));
+            }
+            // 重新发送最后一条用户消息
+            append({ role: 'user', content: lastUserMessageRef.current });
+        }
     };
 
     return (
@@ -85,6 +110,7 @@ export function Chat() {
                                 status={status}
                                 messagesContainerRef={messagesContainerRef as React.RefObject<HTMLDivElement>}
                                 messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
+                                onRetry={handleRetry}
                             />
                             <div className="p-4 space-y-4">
                                 {messages.length === 0 && (
@@ -98,7 +124,7 @@ export function Chat() {
                                 <InputContainer
                                     input={input}
                                     onInputChange={handleInputChangeWrapper}
-                                    onSubmit={handleSubmit}
+                                    onSubmit={handleSubmitWrapper}
                                     isStreaming={status === 'streaming'}
                                 />
                             </div>
