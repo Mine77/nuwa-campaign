@@ -33,7 +33,7 @@ export async function getIrisSystemPrompt(userInfo: UserInfo): Promise<string> {
    let missionsText = '';
 
    missions.forEach((mission, index) => {
-      missionsText += `${index + 1}. **${mission.title}** (ID: \`${mission.id}\`${mission.repeatable ? ', 可重复参与' : ''})\n`;
+      missionsText += `${index + 1}. **${mission.title}** (ID: \`${mission.id}\`${mission.repeatable ? ', Repeatable' : ''})\n`;
       if (mission.prompt) {
          missionsText += `   ${mission.prompt}\n\n`;
       } else {
